@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./:/var/www/
+      - ./_docker/nginx/conf.d/:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    container_name: app_nginx
+    depends_on:
+      - app
+#    environment:
+#      - NGINX_HOST=foobar.com
+#      - NGINX_PORT=80
+
+  app:
+    build:
+      context: .
+      dockerfile: _docker/app/Dockerfile
+    volumes:
+      - ./:/var/www/
+    container_name: app
+    depends_on:
+      - pgsql
+
+  artisan:
+    build:
+      context: .
+      dockerfile: _docker/app/Dockerfile
+    volumes:
+      - ./:/var/www/
+    entrypoint: ["php", "/var/www/artisan"]
+  pgsql:
+    image: postgres:16.2-alpine3.19
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    volumes:
+      - ./tmp/db:/var/lib/postgresql
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: pgdb
+      POSTGRES_USER: root
+    ports:
+      - "5432:5432"
+    container_name: pgsql

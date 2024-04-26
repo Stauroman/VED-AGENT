@@ -54,3 +54,22 @@ services:
     ports:
       - "5432:5432"
     container_name: pgsql
+
+  pgsql-test:
+    image: postgres:16.2-alpine3.19
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    volumes:
+      - ./tmp/db-test:/var/lib/postgresql
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: pgdbtest
+      POSTGRES_USER: root
+    ports:
+      - "5433:5432"
+    container_name: pgsql-test

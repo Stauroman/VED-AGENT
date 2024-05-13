@@ -13,12 +13,12 @@ class CalculateOrderService
     /**
      * @throws ValidationException
      */
-    public function calculate($data): float
+    public function calculate(array $data, CompanyRepository $companyRepository): float
     {
         $requestModel = new OrderRequest;
         $validator = Validator::make($data, $requestModel->rules(), $requestModel->messages());
         $validator->validate();
-        $company = (new CompanyRepository(new Company))->getById($data['company_id']);
+        $company = $companyRepository->getById($data['company_id']);
         return round($data['weight'] * $data['distance'] * $company->cost, 2);
     }
 }

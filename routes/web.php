@@ -13,4 +13,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [\App\Http\Controllers\Order\OrderController::class, 'index'])->name('order.index');
+Route::get('/', [\App\Http\Controllers\Order\OrderController::class, 'index']);

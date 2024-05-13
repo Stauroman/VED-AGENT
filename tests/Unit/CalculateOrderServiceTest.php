@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\Models\Company;
+use App\Repository\Company\CompanyRepository;
 use App\Services\Order\CalculateOrderService;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
@@ -17,7 +19,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 35,
             'distance' => 33,
         ];
-        $this->assertIsFloat((new CalculateOrderService)->calculate($data));
+        $this->assertIsFloat((new CalculateOrderService)->calculate($data, new CompanyRepository(new Company())));
     }
 
     public function test_that_calculate_throw_validation_exception_company_exists_error(): void
@@ -29,7 +31,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 34,
             'distance' => 33,
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
     public function test_that_calculate_throw_validation_exception_company_id_required_error(): void
@@ -41,7 +43,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 34,
             'distance' => 33,
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
     public function test_that_calculate_throw_validation_exception_company_id_type_error(): void
@@ -53,7 +55,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 34,
             'distance' => 33,
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
     public function test_that_calculate_throw_validation_exception_weight_required(): void
@@ -65,7 +67,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => null,
             'distance' => 33,
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
     public function test_that_calculate_throw_validation_exception_weight_type(): void
@@ -77,7 +79,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 'string',
             'distance' => 33,
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
     public function test_that_calculate_throw_validation_exception_weight_min_value(): void
@@ -89,7 +91,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 10,
             'distance' => 33,
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
     public function test_that_calculate_throw_validation_exception_weight_max_value(): void
@@ -101,7 +103,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 1000000,
             'distance' => 33,
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
     public function test_that_calculate_throw_validation_exception_distance_required(): void
@@ -113,7 +115,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 40,
             'distance' => null,
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
     public function test_that_calculate_throw_validation_exception_distance_type(): void
@@ -125,7 +127,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 40,
             'distance' => 'string',
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
     public function test_that_calculate_throw_validation_exception_distance_min_value(): void
@@ -137,7 +139,7 @@ class CalculateOrderServiceTest extends TestCase
             'weight' => 40,
             'distance' => -1,
         ];
-        (new CalculateOrderService)->calculate($data);
+        (new CalculateOrderService)->calculate($data, new CompanyRepository(new Company()));
     }
 
 }

@@ -4,26 +4,46 @@ namespace App\Http\Controllers\Order;
 
 use App\Http\Requests\Order\OrderRequest;
 use App\Models\Order;
+use App\Repository\Company\CompanyRepository;
+use App\Repository\Order\OrderRepository;
+use App\Services\Order\CalculateOrderService;
 use Illuminate\Http\JsonResponse;
 use \Illuminate\Contracts\View\View;
+use Illuminate\Validation\ValidationException;
 
-class OrderController extends BaseOrderController
+class OrderController
 {
-    public function index(): View
+    private CompanyRepository $companyRepository;
+    public function __construct(CompanyRepository $companyRepository)
     {
-        return view('order.index', ['companies' => $this->companyRepository->getAll(), 'minWeight' => Order::MIN_WEIGHT, 'maxWeight' => Order::MAX_WEIGHT]);
+        $this->companyRepository = $companyRepository;
     }
 
-    public function calculate(OrderRequest $request): JsonResponse
+    public function index(): View
     {
-        $amount = $this->service->calculate($request->toArray());
+        return view('order.index', [
+            'companies' => $this->companyRepository->getAll(),
+            'minWeight' => Order::MIN_WEIGHT,
+            'maxWeight' => Order::MAX_WEIGHT,
+        ]);
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function calculate(OrderRequest $request, CalculateOrderService $service): JsonResponse
+    {
+        $amount = $service->calculate($request->validated(), $this->companyRepository);
         return response()->json(['amount' => $amount]);
     }
 
-    public function store(OrderRequest $request): JsonResponse
+    /**
+     * @throws ValidationException
+     */
+    public function store(OrderRequest $request, OrderRepository $orderRepository, CalculateOrderService $service): JsonResponse
     {
-        $amount = $this->service->calculate($request->toArray());
-        $this->orderRepository->store($request->toArray() + ['amount' => $amount]);
+        $amount = $service->calculate($request->validated(), $this->companyRepository);
+        $orderRepository->store($request->validated() + ['amount' => $amount]);
         return response()->json(['message' => 'Расчет сохранен']);
     }
 }
